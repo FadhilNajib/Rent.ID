@@ -1,6 +1,7 @@
 <?php
 include 'koneksi.php';
 //session_start();
+$message= "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nama = trim($_POST['nama']);
@@ -8,7 +9,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (empty($nama) || empty($password)) {
         echo "Semua kolom wajib diisi.";
-        exit;
+        
     }
 
     // Coba cek di tabel mitra dulu
@@ -27,8 +28,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             header("Location: Dashboard_Mitra.php");
             exit;
         } else {
-            echo "Password atau username salah.";
-            exit;
+            $message = "Password atau username salah.";
+            
         }
     }
 
@@ -45,29 +46,40 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['id'] = $user['id'];
             $_SESSION['nama'] = $user['nama'];
             $_SESSION['role'] = 'customer';
-            header("Location: Dashboard_Customer.php");
+            header("Location: dashboard_Customer.php");
             exit;
         } else {
             echo "Password Atau username salah.";
-            exit;
+            
         }
     }
 
-    echo "Nama pengguna tidak ditemukan.";
+    $message = "Username tidak ditemukan.";
     $stmt->close();
 }
 ?>
 
 <form method="POST" action="">
-    <label>Nama:</label><br>
+    <label>Username :</label><br>
     <input type="text" name="nama" required><br><br>
 
     <label>Password:</label><br>
-    <input type="password" name="password" required><br><br>
-
+    <input type="password" id="password"name="password" required><br><br>
+    <input type="checkbox" id="showPassword" onclick="togglePassword()"> Tampilkan Password
+    <br><br>
     <button type="submit">Login</button><br><br>
 
     <div class="register-link">
         Belum punya akun? <a href="register.php">Daftar di sini</a>
     </div>
 </form>
+<script>
+function togglePassword() {
+    const passwordField = document.getElementById("password");
+    const checkbox = document.getElementById("showPassword");
+    passwordField.type = checkbox.checked ? "text" : "password";
+}
+</script>
+
+<!-- login customer pelanggan1 pass = cust123 -->
+<!-- Login mitra motor pass = motor123 -->

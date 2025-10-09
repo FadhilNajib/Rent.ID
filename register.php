@@ -5,12 +5,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $role = $_POST['role'];
     $nama = trim($_POST['nama']);
     $email = trim($_POST['email']);
-    $no_telepon = trim($_POST['no_telepon']);
-    $alamat = trim($_POST['alamat']);
     $password = trim($_POST['password']);
+    $confirm_password = trim($_POST['confirm_password']);
 
-    if (empty($role) || empty($nama) || empty($email) || empty($no_telepon) || empty($alamat) || empty($password)) {
+    // Validasi input kosong
+    if (empty($role) || empty($nama) || empty($email) || empty($password) || empty($confirm_password)) {
         echo "Semua kolom wajib diisi.";
+        exit;
+    }
+
+    // Cek apakah password dan konfirmasi sama
+    if ($password !== $confirm_password) {
+        echo "Password dan Ulangi Password tidak cocok.";
         exit;
     }
 
@@ -18,18 +24,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
     if ($role === 'mitra') {
-        $stmt = $conn->prepare("INSERT INTO mitra (nama_mitra, password, email, no_telepon, alamat) VALUES (?, ?, ?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO mitra (nama_mitra, password, email) VALUES (?, ?, ?)");
     } elseif ($role === 'customer') {
-        $stmt = $conn->prepare("INSERT INTO customer (nama, password, email, no_telepon, alamat, tanggal_daftar) VALUES (?, ?, ?, ?, ?, NOW())");
+        $stmt = $conn->prepare("INSERT INTO customer (nama, password, email, tanggal_daftar) VALUES (?, ?, ?, NOW())");
     } else {
         echo "Role tidak valid.";
         exit;
     }
 
-    $stmt->bind_param("sssss", $nama, $hashed_password, $email, $no_telepon, $alamat);
+    $stmt->bind_param("sss", $nama, $hashed_password, $email);
 
     if ($stmt->execute()) {
-        echo "Registrasi berhasil! <a href='login.php'>Login di sini</a>";
+        header("Location: login.php");
+        // echo "Registrasi berhasil! <a href='login.php'>Login di sini</a>";
     } else {
         echo "Terjadi kesalahan: " . $conn->error;
     }
@@ -52,14 +59,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <label>Email:</label>
     <input type="email" name="email" required><br>
 
-    <label>No. Telepon:</label>
-    <input type="text" name="no_telepon" required><br>
-
-    <label>Alamat:</label>
-    <textarea name="alamat" required></textarea><br>
-
     <label>Password:</label>
-    <input type="password" id="password" name="password" required>
+    <input type="password" id="password" name="password" required><br>
+
+    <label>Ulangi Password:</label>
+    <input type="password" id="confirm_password" name="confirm_password" required><br>
+
     <input type="checkbox" id="showPassword" onclick="togglePassword()"> Tampilkan Password
     <br><br>
 
@@ -72,8 +77,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <script>
 function togglePassword() {
-    const passwordField = document.getElementById("password");
+    const password = document.getElementById("password");
+    const confirm = document.getElementById("confirm_password");
     const checkbox = document.getElementById("showPassword");
-    passwordField.type = checkbox.checked ? "text" : "password";
+    const type = checkbox.checked ? "text" : "password";
+    password.type = type;
+    confirm.type = type;
 }
 </script>
