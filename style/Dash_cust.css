@@ -1,0 +1,120 @@
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: url('.asset/logo.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: #0B0146;
+    }
+
+    /* Navbar */
+    nav {
+      background-color: #93BAFF;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 4rem;
+      flex-wrap: wrap;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 2.5rem;
+      flex-wrap: wrap;
+    }
+
+    nav ul li a {
+      text-decoration: none;
+      color: #0B0146;
+      font-weight: 500;
+      font-size: 1rem;
+    }
+
+    nav ul li a.active {
+      font-weight: 700;
+      text-decoration: underline;
+    }
+
+    .logout-btn {
+      background: #fff;
+      color: #0B0146;
+      border: none;
+      border-radius: 25px;
+      padding: 0.5rem 1.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .logout-btn:hover {
+      background: #e0e0e0;
+    }
+
+    /* Main content */
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 5vh 8vw;
+    }
+
+    .content h1 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .content h2 {
+      font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+    }
+
+    .emoji {
+      font-size: 2.5rem;
+    }
+
+    .content p {
+      font-size: clamp(1rem, 1.5vw, 1.25rem);
+      font-weight: 500;
+      max-width: 700px;
+      line-height: 1.6;
+    }
+
+    /* Footer */
+    footer {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem 0;
+    }
+
+    footer img {
+      width: 325px;
+      height: 325px;
+      object-fit: contain;
+      opacity: 0.95;
+    }
+
+    @media (max-width: 768px) {
+      nav {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem 2rem;
+      }
+      .content {
+        padding: 8vh 6vw;
+        align-items: center;
+        text-align: center;
+      }
+    }

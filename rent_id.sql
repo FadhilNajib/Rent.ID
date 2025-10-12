@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 09 Okt 2025 pada 14.44
--- Versi server: 10.4.28-MariaDB
--- Versi PHP: 8.1.17
+-- Generation Time: Oct 11, 2025 at 07:57 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,7 +24,7 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `admin`
+-- Table structure for table `admin`
 --
 
 CREATE TABLE `admin` (
@@ -37,7 +37,7 @@ CREATE TABLE `admin` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `customer`
+-- Table structure for table `customer`
 --
 
 CREATE TABLE `customer` (
@@ -51,17 +51,18 @@ CREATE TABLE `customer` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `customer`
+-- Dumping data for table `customer`
 --
 
 INSERT INTO `customer` (`id_customer`, `nama`, `email`, `no_telepon`, `password`, `tanggal_daftar`, `alamat`) VALUES
 (1, 'najib', 'fadhilnaji@gmail.com', 2147483647, '0', '2025-10-07', 'Dk Plosowangi Rt03/Rw03 Ds Plosowangi Kec.Tersono'),
-(2, 'pelanggan1', 'pelanggan@upn.com', 0, '$2y$10$IbfDyZDfBkMFnoOm4xtgO.9TwxC/pZLhP53F8XjHM8t2dq/HFpF6S', '2025-10-09', '');
+(2, 'pelanggan1', 'pelanggan@upn.com', 0, '$2y$10$IbfDyZDfBkMFnoOm4xtgO.9TwxC/pZLhP53F8XjHM8t2dq/HFpF6S', '2025-10-09', ''),
+(3, 'Alex', 'Alexisnder@gmail.com', 0, '$2y$10$slhCl.ldH9/t3YcQnr3Gfex4J8M1ahVZcEXvPQ.YHRjrGPINrO5CO', '2025-10-12', '');
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `kendaraan`
+-- Table structure for table `kendaraan`
 --
 
 CREATE TABLE `kendaraan` (
@@ -80,7 +81,7 @@ CREATE TABLE `kendaraan` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `mitra`
+-- Table structure for table `mitra`
 --
 
 CREATE TABLE `mitra` (
@@ -93,19 +94,21 @@ CREATE TABLE `mitra` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `mitra`
+-- Dumping data for table `mitra`
 --
 
 INSERT INTO `mitra` (`id_mitra`, `nama_mitra`, `password`, `email`, `no_telepon`, `alamat`) VALUES
 (1, 'sewa motor', '$2y$10$uf57Xgm90c0am', 'sewa@gmail.com', 888887766, 'jogja'),
 (2, 'bagus', '$2y$10$kX8NtTNyCkFBmIyBTDqoR.5WPrkMWRCXFJsK.Yo87pvDl694DFHFe', 'bagus@yahoo.com', 2134567, 'malang'),
 (3, 'motor', '$2y$10$63hH3njIIzsEh1RoHGt8EuECoWAg3qse4HDCPN4lk015UcBmbxunC', 'motor@yahoo.com', 987654321, 'jogja'),
-(4, 'mitra1', '$2y$10$DYhmLd2NWGSBdBturM.tyOsuajS4RpBMMGZWSUyYYIR.jJOpVwoHO', 'mitra@upn.com', 0, '');
+(4, 'mitra1', '$2y$10$DYhmLd2NWGSBdBturM.tyOsuajS4RpBMMGZWSUyYYIR.jJOpVwoHO', 'mitra@upn.com', 0, ''),
+(5, 'lopaa', '$2y$10$gJpTyBatVM2SAmYYcL/nt.WOlcBx.hVV0tX/1XfOcCIpa.YiN.7ha', 'lopa@gmail.com', 0, ''),
+(6, 'ku', '$2y$10$lfruJY0CSPHsae9p9jHIjeoMJ44Qa13KpgonhomNzF0iWhaw6QcKK', 'kuku@gmail.com', 0, '');
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `pembayaran`
+-- Table structure for table `pembayaran`
 --
 
 CREATE TABLE `pembayaran` (
@@ -120,7 +123,7 @@ CREATE TABLE `pembayaran` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `transaksi`
+-- Table structure for table `transaksi`
 --
 
 CREATE TABLE `transaksi` (
@@ -136,7 +139,7 @@ CREATE TABLE `transaksi` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `ulasan`
+-- Table structure for table `ulasan`
 --
 
 CREATE TABLE `ulasan` (
@@ -153,19 +156,19 @@ CREATE TABLE `ulasan` (
 --
 
 --
--- Indeks untuk tabel `admin`
+-- Indexes for table `admin`
 --
 ALTER TABLE `admin`
   ADD PRIMARY KEY (`id_admin`);
 
 --
--- Indeks untuk tabel `customer`
+-- Indexes for table `customer`
 --
 ALTER TABLE `customer`
   ADD PRIMARY KEY (`id_customer`);
 
 --
--- Indeks untuk tabel `kendaraan`
+-- Indexes for table `kendaraan`
 --
 ALTER TABLE `kendaraan`
   ADD PRIMARY KEY (`kendaraan_id`),
@@ -173,20 +176,20 @@ ALTER TABLE `kendaraan`
   ADD KEY `id_mitra` (`id_mitra`);
 
 --
--- Indeks untuk tabel `mitra`
+-- Indexes for table `mitra`
 --
 ALTER TABLE `mitra`
   ADD PRIMARY KEY (`id_mitra`);
 
 --
--- Indeks untuk tabel `pembayaran`
+-- Indexes for table `pembayaran`
 --
 ALTER TABLE `pembayaran`
   ADD PRIMARY KEY (`pembayaran_id`),
   ADD KEY `rental_id` (`rental_id`);
 
 --
--- Indeks untuk tabel `transaksi`
+-- Indexes for table `transaksi`
 --
 ALTER TABLE `transaksi`
   ADD PRIMARY KEY (`rental_id`),
@@ -194,7 +197,7 @@ ALTER TABLE `transaksi`
   ADD KEY `kendaraan_id` (`kendaraan_id`);
 
 --
--- Indeks untuk tabel `ulasan`
+-- Indexes for table `ulasan`
 --
 ALTER TABLE `ulasan`
   ADD PRIMARY KEY (`ulasan_id`),
@@ -202,76 +205,76 @@ ALTER TABLE `ulasan`
   ADD KEY `kendaraan_id` (`kendaraan_id`);
 
 --
--- AUTO_INCREMENT untuk tabel yang dibuang
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT untuk tabel `admin`
+-- AUTO_INCREMENT for table `admin`
 --
 ALTER TABLE `admin`
   MODIFY `id_admin` int(10) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT untuk tabel `customer`
+-- AUTO_INCREMENT for table `customer`
 --
 ALTER TABLE `customer`
-  MODIFY `id_customer` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_customer` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT untuk tabel `kendaraan`
+-- AUTO_INCREMENT for table `kendaraan`
 --
 ALTER TABLE `kendaraan`
   MODIFY `kendaraan_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT untuk tabel `mitra`
+-- AUTO_INCREMENT for table `mitra`
 --
 ALTER TABLE `mitra`
-  MODIFY `id_mitra` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_mitra` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT untuk tabel `pembayaran`
+-- AUTO_INCREMENT for table `pembayaran`
 --
 ALTER TABLE `pembayaran`
   MODIFY `pembayaran_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT untuk tabel `transaksi`
+-- AUTO_INCREMENT for table `transaksi`
 --
 ALTER TABLE `transaksi`
   MODIFY `rental_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT untuk tabel `ulasan`
+-- AUTO_INCREMENT for table `ulasan`
 --
 ALTER TABLE `ulasan`
   MODIFY `ulasan_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
+-- Constraints for dumped tables
 --
 
 --
--- Ketidakleluasaan untuk tabel `kendaraan`
+-- Constraints for table `kendaraan`
 --
 ALTER TABLE `kendaraan`
   ADD CONSTRAINT `kendaraan_ibfk_1` FOREIGN KEY (`id_mitra`) REFERENCES `mitra` (`id_mitra`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Ketidakleluasaan untuk tabel `pembayaran`
+-- Constraints for table `pembayaran`
 --
 ALTER TABLE `pembayaran`
   ADD CONSTRAINT `pembayaran_ibfk_1` FOREIGN KEY (`rental_id`) REFERENCES `transaksi` (`rental_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Ketidakleluasaan untuk tabel `transaksi`
+-- Constraints for table `transaksi`
 --
 ALTER TABLE `transaksi`
   ADD CONSTRAINT `transaksi_ibfk_1` FOREIGN KEY (`id_customer`) REFERENCES `customer` (`id_customer`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `transaksi_ibfk_2` FOREIGN KEY (`kendaraan_id`) REFERENCES `kendaraan` (`kendaraan_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Ketidakleluasaan untuk tabel `ulasan`
+-- Constraints for table `ulasan`
 --
 ALTER TABLE `ulasan`
   ADD CONSTRAINT `ulasan_ibfk_1` FOREIGN KEY (`id_customer`) REFERENCES `customer` (`id_customer`) ON DELETE CASCADE ON UPDATE CASCADE,
