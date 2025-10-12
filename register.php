@@ -68,6 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <input type="email" name="email" placeholder="E-mail" required>
             <input type="password" id="password" name="password" placeholder="Password" required>
             <input type="password" id="confirm_password" name="confirm_password" placeholder="Konfirmasi Password" required>
+            <input type="checkbox" id="showPassword" onclick="togglePassword()"> Tampilkan Password
 
             <div class="role-selection">
     <label class="role-label">Buat akun sebagai:</label>

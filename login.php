@@ -79,7 +79,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <form method="POST" action="">
             <input type="text" name="nama" placeholder="Username" required>
             <input type="password" id="password" name="password" placeholder="Password" required>
-
+            <input type="checkbox" id="showPassword" onclick="togglePassword()"> Tampilkan Password
             <button type="submit">Login</button>
 
             <div class="register-link">
