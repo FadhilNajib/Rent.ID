@@ -37,7 +37,7 @@ $result = $stmt->get_result();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar Motor | Rent.ID</title>
-    <style>
+    <!-- <style>
         body {
             font-family: Arial, sans-serif;
             background: #f4f6f9;
@@ -115,7 +115,7 @@ $result = $stmt->get_result();
         .btn-sewa:hover {
             background: #218838;
         }
-    </style>
+    </style> -->
 </head>
 <body>
 <div class="container">

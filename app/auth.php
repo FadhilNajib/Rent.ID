@@ -124,4 +124,12 @@ function requireLogin($role = null)
         exit;
     }
 }
+
+/**
+ * HANDLER UNTUK ACTION DI URL
+ * (tambahkan di paling bawah)
+ */
+if (isset($_GET['action']) && $_GET['action'] === 'logout') {
+    logoutUser();
+}
 ?>
