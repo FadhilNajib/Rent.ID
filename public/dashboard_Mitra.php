@@ -1,10 +1,9 @@
 <?php 
 session_start();
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'mitra') {
-    header("Location: login.php");
-    exit;
-}
-include 'koneksi.php';
+include '../app/auth.php';
+requireLogin('mitra'); // hanya bisa diakses mitra
+
+include __DIR__ . '/../config/koneksi.php';
 $mitra_id = $_SESSION['id_mitra'];
 
 // jumlah penyewa 
@@ -36,10 +35,6 @@ $q3 = $conn->query("
 $transaksi_aktif = $q3->fetch_assoc()['total'];
 ?>
 
-
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -55,9 +50,9 @@ $transaksi_aktif = $q3->fetch_assoc()['total'];
   <!-- Navbar -->
   <nav>
     <ul>
-      <li><a href="#">Profile</a></li>
+      <li><a href="profile.php">Profile</a></li>
       <li><a href="#" class="active">Dashboard</a></li>
-      <li><a href="#">Rentals</a></li>
+      <li><a href="mitra/tambah_kendaraan.php">Rentals</a></li>
       <li><a href="#">Customer</a></li>
       <li><a href="#">Payment</a></li>
       <li><a href="#">Reports</a></li>

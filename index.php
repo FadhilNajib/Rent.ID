@@ -20,7 +20,7 @@
 
         body {
             height: 100vh;
-            background: url('asset/BG_PROJEK.jpg') no-repeat center center/cover;
+            background: url('public/asset/BG_PROJEK.jpg') no-repeat center center/cover;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -79,7 +79,7 @@
             Kami hadir untuk memberikan solusi transportasi yang praktis,<br>
             cepat, dan terpercaya sesuai kebutuhan Anda.
         </p>
-        <a href="login.php" class="btn-login">LOGIN</a>
+        <a href="public/login.php" class="btn-login">LOGIN</a>
     </div>
 </body>
 </html>

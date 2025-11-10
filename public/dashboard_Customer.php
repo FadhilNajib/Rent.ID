@@ -1,8 +1,7 @@
 <?php session_start();
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'customer') {
-    header("Location: login.php");
-    exit;
-}
+include '../app/auth.php';
+requireLogin('customer'); // hanya bisa diakses mitra
+include __DIR__ . '/../config/koneksi.php';
 ?>
 
 <!DOCTYPE html>
@@ -22,7 +21,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'customer') {
     <ul>
       <li><a href="#">Profile</a></li>
       <li><a href="#" class="active">Dashboard</a></li>
-      <li><a href="#">Vehicles</a></li>
+      <li><a href="cust/vechiles_user.php">Vehicles</a></li>
       <li><a href="#">My Rentals</a></li>
       <li><a href="#">Settings</a></li>
     </ul>
