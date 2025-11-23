@@ -2,6 +2,7 @@
 include '../app/auth.php';
 requireLogin('customer'); // hanya bisa diakses mitra
 include __DIR__ . '/../config/koneksi.php';
+include 'navbar.php';
 ?>
 
 <!DOCTYPE html>
@@ -16,19 +17,6 @@ include __DIR__ . '/../config/koneksi.php';
 </head>
 <body>
 
-  <!-- Navbar -->
-  <nav>
-    <ul>
-      <li><a href="#">Profile</a></li>
-      <li><a href="#" class="active">Dashboard</a></li>
-      <li><a href="cust/vechiles_user.php">Vehicles</a></li>
-      <li><a href="#">My Rentals</a></li>
-      <li><a href="#">Settings</a></li>
-    </ul>
-    <button class="logout-btn" onclick="window.location.href='logout.php'">
-      Logout
-    </button>
-    </nav>
 
   <!-- Content -->
   <div class="content">

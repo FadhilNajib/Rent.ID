@@ -2,7 +2,7 @@
 session_start();
 include '../app/auth.php';
 requireLogin('mitra'); // hanya bisa diakses mitra
-
+include 'navbar.php';
 include __DIR__ . '/../config/koneksi.php';
 $mitra_id = $_SESSION['id_mitra'];
 
@@ -46,23 +46,6 @@ $transaksi_aktif = $q3->fetch_assoc()['total'];
   <link rel="icon" type="image/png" sizes="32x32" href="asset/icon.png">
 </head>
 <body>
-
-  <!-- Navbar -->
-  <nav>
-    <ul>
-      <li><a href="profile.php">Profile</a></li>
-      <li><a href="#" class="active">Dashboard</a></li>
-      <li><a href="mitra/tambah_kendaraan.php">Rentals</a></li>
-      <li><a href="#">Customer</a></li>
-      <li><a href="#">Payment</a></li>
-      <li><a href="#">Reports</a></li>
-      <li><a href="#">Settings</a></li>
-    </ul>
-    <button class="logout-btn" onclick="window.location.href='logout.php'">
-      Logout
-    </button>
-
-  </nav>
 
   <!-- Content -->
   <div class="container">
