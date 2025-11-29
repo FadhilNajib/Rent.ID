@@ -84,7 +84,7 @@ requireLogin('mitra');?>
     </form>
 
     <div class="back">
-        <a href="mitra.php">← Kembali ke Dashboard</a>
+        <a href="../dashboard_Mitra.php">← Kembali ke Dashboard</a>
     </div>
 </div>
 </body>

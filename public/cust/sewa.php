@@ -17,24 +17,49 @@ if (!$data) {
     die("Data kendaraan tidak ditemukan.");
 }
 
-// Jika submit
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $mulai = $_POST['tanggal_mulai'];
     $selesai = $_POST['tanggal_selesai'];
+    $metodeBayar = $_POST['metode_pembayaran'];
 
-    // hitung hari
-    $hari = (strtotime($selesai) - strtotime($mulai)) / 86400;
-    if ($hari < 1) $hari = 1;
-
-    $total = $hari * $data['harga_sewa_per_hari'];
-
-    $buat = $kendaraan->buatTransaksi($_SESSION['id'], $kendaraanId, $mulai, $selesai, $total);
-
-    if ($buat) {
-        echo "<script>alert('Transaksi berhasil dibuat!'); window.location='my_rentals.php';</script>";
-        exit;
+    // VALIDASI TANGGAL
+    if ($mulai > $selesai) {
+        echo "<script>alert('Tanggal mulai tidak boleh lebih besar dari tanggal selesai');</script>";
     } else {
-        echo "<script>alert('Gagal membuat transaksi.');</script>";
+
+        // hitung hari pakai DateTime supaya pasti benar
+        $start = new DateTime($mulai);
+        $end   = new DateTime($selesai);
+
+        $diff  = $start->diff($end)->days;
+        $hari  = ($diff >= 1) ? $diff : 1; // minimal 1 hari
+
+        $total = $hari * $data['harga_sewa_per_hari'];
+
+        // Buat transaksi
+        $rentalId = $kendaraan->buatTransaksi($_SESSION['id'], $kendaraanId, $mulai, $selesai, $total);
+
+        if ($rentalId) {
+
+            // LOGIC PEMBAYARAN
+            if ($metodeBayar === "COD") {
+                // Pending (mitra yang akan konfirmasi)
+                $kendaraan->buatPembayaran($rentalId, "COD", $total, "pending");
+
+            } else {
+                // Transfer atau e-wallet → langsung sukses
+                $kendaraan->buatPembayaran($rentalId, $metodeBayar, $total, "sukses");
+            }
+
+            echo "<script>
+                    alert('Transaksi berhasil! Lanjut ke pembayaran.');
+                    window.location='pembayaran.php?rental_id=$rentalId';
+                 </script>";
+            exit;
+
+        } else {
+            echo "<script>alert('Gagal membuat transaksi.');</script>";
+        }
     }
 }
 ?>
@@ -57,6 +82,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <label>Tanggal Selesai</label><br>
     <input type="date" name="tanggal_selesai" required><br><br>
+
+    <label>Metode Pembayaran</label><br>
+    <select name="metode_pembayaran" required>
+        <option value="transfer_bank">Transfer Bank</option>
+        <option value="e_wallet">E-Wallet</option>
+        <option value="COD">COD</option>
+    </select>
+    <br><br>
 
     <button type="submit">Konfirmasi Sewa</button>
 </form>
