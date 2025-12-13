@@ -25,6 +25,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="register-box">
         <h2>Selamat Datang<br>di Rent.id</h2>
 
+        <?php if (!empty($message)): ?>
+            <p class="error-message" style="color:#b91c1c;margin-bottom:12px;"><?= htmlspecialchars($message) ?></p>
+        <?php endif; ?>
+
         <form method="POST" action="">
             <input type="text" name="nama" placeholder="Nama" required>
             <input type="email" name="email" placeholder="E-mail" required>
@@ -52,8 +56,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="role-selection">
                 <label class="role-label">Buat akun sebagai:</label>
                 <div class="role-options">
-                    <label><input type="radio" name="role" value="customer"> Penyewa</label>
-                    <label><input type="radio" name="role" value="mitra"> Pemilik rental</label>
+                        <label><input type="radio" name="role" value="customer" required> Penyewa</label>
+                        <label><input type="radio" name="role" value="mitra"> Pemilik rental</label>
                 </div>
             </div>
 

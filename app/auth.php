@@ -79,11 +79,33 @@ function registerUser($role, $nama, $email, $password, $confirm_password)
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
     if ($role === 'mitra') {
+        // cek duplikat nama atau email pada tabel mitra
+        $chk = $conn->prepare("SELECT id_mitra FROM mitra WHERE nama_mitra = ? OR email = ?");
+        $chk->bind_param("ss", $nama, $email);
+        $chk->execute();
+        $res = $chk->get_result();
+        if ($res && $res->num_rows > 0) {
+            return "Nama atau email sudah terdaftar (mitra).";
+        }
+
         $stmt = $conn->prepare("INSERT INTO mitra (nama_mitra, password, email) VALUES (?, ?, ?)");
     } elseif ($role === 'customer') {
+        // cek duplikat nama atau email pada tabel customer
+        $chk = $conn->prepare("SELECT id_customer FROM customer WHERE nama = ? OR email = ?");
+        $chk->bind_param("ss", $nama, $email);
+        $chk->execute();
+        $res = $chk->get_result();
+        if ($res && $res->num_rows > 0) {
+            return "Nama atau email sudah terdaftar (customer).";
+        }
+
         $stmt = $conn->prepare("INSERT INTO customer (nama, password, email, tanggal_daftar) VALUES (?, ?, ?, NOW())");
     } else {
         return "Role tidak valid.";
+    }
+
+    if (!$stmt) {
+        return "Terjadi kesalahan pada query: " . $conn->error;
     }
 
     $stmt->bind_param("sss", $nama, $hashed_password, $email);
@@ -92,7 +114,7 @@ function registerUser($role, $nama, $email, $password, $confirm_password)
         header("Location: ../public/login.php");
         exit;
     } else {
-        return "Terjadi kesalahan: " . $conn->error;
+        return "Terjadi kesalahan saat menyimpan: " . $stmt->error;
     }
 }
 
@@ -102,12 +124,39 @@ function registerUser($role, $nama, $email, $password, $confirm_password)
  */
 function logoutUser()
 {
-    session_unset();
+    // Pastikan session sudah dimulai
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    // 1. Kosongkan semua variabel session
+    $_SESSION = [];
+
+    // 2. Hapus session cookie di browser (INI YANG PALING PENTING!)
+    if (ini_get("session.use_cookies")) {
+        $params = session_get_cookie_params();
+        setcookie(
+            session_name(),
+            '',
+            time() - 42000,
+            $params["path"],
+            $params["domain"],
+            $params["secure"],
+            $params["httponly"]
+        );
+    }
+
+    // 3. Baru destroy session di server
     session_destroy();
+
+    // 4. Hapus cookie tambahan kalau kalian pakai remember me atau simpan role di cookie
+    // setcookie('username', '', time() - 3600, "/");
+    // setcookie('role', '', time() - 3600, "/");
+
+    // 5. Redirect ke index/login
     header("Location: ../index.php");
     exit;
 }
-
 
 /**
  * CEK LOGIN & BATAS AKSES

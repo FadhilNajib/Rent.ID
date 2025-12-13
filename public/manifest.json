@@ -1,0 +1,26 @@
+{
+  "name": "RENT.ID",
+  "short_name": "RentID",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#6c63ff",
+  "icons": [
+    {
+      "src": "asset/icon.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "asset/icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "asset/icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

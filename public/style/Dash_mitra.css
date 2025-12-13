@@ -15,69 +15,9 @@
       zoom: 0.9;
     }
 
-    /* Navbar */
-    nav {
-      background-color: #AFC8FF;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1.2rem 5rem;
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-      width: 100%;
-    }
-
-    nav ul {
-      list-style: none;
-      display: flex;
-      gap: 2.5rem;
-    }
-
-    nav ul li a {
-      text-decoration: none;
-      color: #ffffff;
-      font-weight: 500;
-      font-size: 1.1rem;
-      position: relative;
-      transition: 0.2s;
-    }
-
-    nav ul li a:hover {
-      opacity: 0.8;
-    }
-
-    nav ul li a.active {
-      color: #ffffff;
-      font-weight: 700;
-    }
-
-    nav ul li a.active::after {
-      content: "";
-      position: absolute;
-      bottom: -6px;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background-color: #ffffff;
-      border-radius: 2px;
-    }
-
-    .logout-btn {
-      background: #ffffff;
-      color: #91b1ff;
-      border: none;
-      border-radius: 50px;
-      padding: 0.6rem 2rem;
-      font-weight: 700;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .logout-btn:hover {
-      background: #f3f6ff;
-      color: #6d9cff;
-    }
+    /* Navbar: page-specific navbar rules removed so the shared `public/navbar.php` styles
+       apply consistently across pages. If dashboard/mitra require unique nav appearance,
+       scope those rules under a parent class (e.g. `.mitra-dashboard nav { ... }`). */
 
     /* Content */
     .container {

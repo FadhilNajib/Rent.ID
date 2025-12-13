@@ -1,6 +1,5 @@
+<!-- logout.php -->
 <?php
-$_SESSION = array();
-session_destroy();
-header("Location: ../index.php"); 
-exit();
+include '../app/auth.php';        // atau file yang isinya function logoutUser()
+logoutUser();                   // langsung panggil fungsi
 ?>

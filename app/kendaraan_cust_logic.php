@@ -123,6 +123,38 @@ public function getTransaksiByCustomer($customer_id)
 
     return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 }
+
+// ===============================
+// GET DETAIL TRANSAKSI (My Rental Detail) – VERSI BENAR & LENGKAP
+// ===============================
+public function getDetailTransaksi($id_transaksi)
+{
+    global $conn;
+
+    $sql = "SELECT 
+                t.*,
+                k.merk, 
+                k.model, 
+                k.plat_nomor, 
+                k.foto,
+                k.harga_sewa_per_hari,
+                m.nama_mitra, 
+                m.no_telepon,
+                c.nama AS nama_customer,
+                c.email AS email_customer
+            FROM transaksi t
+            JOIN kendaraan k ON t.kendaraan_id = k.kendaraan_id
+            JOIN mitra m ON k.id_mitra = m.id_mitra
+            JOIN customer c ON t.id_customer = c.id_customer
+            WHERE t.rental_id = ?
+            LIMIT 1";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $id_transaksi);
+    $stmt->execute();
+    
+    return $stmt->get_result()->fetch_assoc(); // return array atau null
+}
 }
 
 

@@ -62,7 +62,30 @@ include_once __DIR__ . '/../navbar.php';
             <td><?= $t['rental_id'] ?></td>
 
             <td>
-                <img src="../../uploads/<?= $t['foto'] ?>" alt="">
+                <?php
+                // Determine image source: prefer file in `uploads/`, otherwise if the DB contains
+                // raw binary image data (BLOB) render as data URI. Fallback to a placeholder.
+                $fotoField = $t['foto'] ?? '';
+                $imgSrc = '../../asset/logo.png';
+
+                // path to uploads relative to this file
+                $uploadPath = __DIR__ . '/../../uploads/' . $fotoField;
+                if (!empty($fotoField) && file_exists($uploadPath)) {
+                    $imgSrc = '../../uploads/' . rawurlencode($fotoField);
+                } elseif (!empty($fotoField) && strlen($fotoField) > 64) {
+                    // likely binary blob; try to detect mime type and emit data URI
+                    if (function_exists('finfo_buffer')) {
+                        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                        $mime = finfo_buffer($finfo, $fotoField) ?: 'image/jpeg';
+                        finfo_close($finfo);
+                    } else {
+                        $mime = 'image/jpeg';
+                    }
+                    $imgSrc = 'data:' . $mime . ';base64,' . base64_encode($fotoField);
+                }
+                ?>
+
+                <img src="<?= $imgSrc ?>" alt="">
                 <br>
                 <?= htmlspecialchars($t['merk'] . ' ' . $t['model']) ?><br>
                 <span class="small"><?= htmlspecialchars($t['plat_nomor']) ?></span>
@@ -83,7 +106,7 @@ include_once __DIR__ . '/../navbar.php';
             </td>
 
             <td>
-                <a href="rental_detail.php?id=<?= $t['rental_id'] ?>">Detail</a>
+                <a href="detail_rental.php?id=<?= $t['rental_id'] ?>">Detail</a>
             </td>
         </tr>
     <?php endforeach; ?>

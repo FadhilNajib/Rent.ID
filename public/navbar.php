@@ -1,100 +1,184 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+  session_start();
 }
 
-// Pastikan user sudah login (keamanan tambahan)
-if (!isset($_SESSION['role'])) {
-    header("Location: login.php");
-    exit;
+// Jangan redirect di navbar — biarkan halaman itu yang memutuskan akses.
+// Hanya baca role jika ada dan bangun base URL yang selalu mengarah ke folder `/public/`.
+$scriptPath = str_replace('\\', '/', $_SERVER['SCRIPT_NAME']);
+$posPublic = strpos($scriptPath, '/public/');
+if ($posPublic !== false) {
+  $BASE_URL = substr($scriptPath, 0, $posPublic + strlen('/public/'));
+} else {
+  // fallback: gunakan dirname dari script
+  $BASE_URL = rtrim(dirname($scriptPath), '/') . '/';
 }
-
-$BASE_URL = "/Rent.ID/public/";
+$role = $_SESSION['role'] ?? null;
+$isDashboard = basename($_SERVER['SCRIPT_NAME']) === 'dashboard_Customer.php';
+// derive a page-specific class like `page-profile` or `page-settings`
+$scriptName = basename($_SERVER['SCRIPT_NAME']);
+$pageName = pathinfo($scriptName, PATHINFO_FILENAME);
+$pageClass = 'page-' . preg_replace('/[^a-zA-Z0-9_\-]/', '', $pageName);
 ?>
 
 <!-- ===== UNIVERSAL NAVBAR ===== -->
-
-
-<nav>
-  <ul>
-    <?php if ($_SESSION['role'] === 'customer'): ?>
+<nav class="navbar navbar-expand-md <?= trim(($isDashboard ? 'dashboard-theme ' : '') . $pageClass) ?>">
+  <div class="nav-left">
+    <div class="brand">
+      <img src="<?= $BASE_URL ?>asset/logo.png" alt="RENT.ID" />
+      <span class="brand-name">RENT.ID</span>
+    </div>
+  </div>
+  <ul class="nav-menu" id="navMenu">
+    <?php if (!$role): ?>
+      <li class="nav-item">
+        <a class="nav-link <?= basename($_SERVER['SCRIPT_NAME']) === 'login.php' ? 'active' : '' ?>" href="<?= $BASE_URL ?>login.php">
+          Login
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link <?= basename($_SERVER['SCRIPT_NAME']) === 'register.php' ? 'active' : '' ?>" href="<?= $BASE_URL ?>register.php">
+          Register
+        </a>
+      </li>
+    <?php else: ?>
+      <?php if ($role === 'customer'): ?>
       <!-- ==== MENU CUSTOMER ==== -->
-      <li><a href="<?= $BASE_URL ?>profile.php">Profile</a></li>
-      <li><a href="<?= $BASE_URL ?>dashboard_Customer.php"
-             class="<?= basename($_SERVER['PHP_SELF']) === 'dashboard_Customer.php' ? 'active' : '' ?>">
-          Dashboard
-      </a></li>
-      <li><a href="<?= $BASE_URL ?>cust/vechiles_user.php">Vehicles</a></li>
-      <li><a href="<?= $BASE_URL ?>cust/my_rentals.php">My Rentals</a></li>
-      <li><a href="#">Settings</a></li>
+      <li class="nav-item">
+        <a class="nav-link <?= basename($_SERVER['SCRIPT_NAME']) === 'profile.php' ? 'active' : '' ?>" href="<?= $BASE_URL ?>profile.php">Profile</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link <?= basename($_SERVER['SCRIPT_NAME']) === 'dashboard_Customer.php' ? 'active' : '' ?>" href="<?= $BASE_URL ?>dashboard_Customer.php">Dashboard</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link <?= basename($_SERVER['SCRIPT_NAME']) === 'vechiles_user.php' ? 'active' : '' ?>" href="<?= $BASE_URL ?>cust/vechiles_user.php">Vehicles</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link <?= basename($_SERVER['SCRIPT_NAME']) === 'my_rentals.php' ? 'active' : '' ?>" href="<?= $BASE_URL ?>cust/my_rentals.php">My Rentals</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link <?= basename($_SERVER['SCRIPT_NAME']) === 'settings.php' ? 'active' : '' ?>" href="<?= $BASE_URL ?>settings.php">Settings</a>
+      </li>
 
-    <?php elseif ($_SESSION['role'] === 'mitra'): ?>
+      <?php elseif ($role === 'mitra'): ?>
       <!-- ==== MENU MITRA ==== -->
-      <li><a href="<?= $BASE_URL ?>profile.php">Profile</a></li>
-      <li><a href="<?= $BASE_URL ?>Dashboard_Mitra.php"
-             class="<?= basename($_SERVER['PHP_SELF']) === 'Dashboard_Mitra.php' ? 'active' : '' ?>">
-          Dashboard
-      </a></li>
-      <li><a href="<?= $BASE_URL ?>mitra/rentals.php">Rentals</a></li>
-      <li><a href="<?= $BASE_URL ?>mitra/kelola_kendaraan.php">Kendaraan</a></li>
-      <li><a href="#">Payment</a></li>
-      <li><a href="#">Reports</a></li>
-      <li><a href="#">Settings</a></li>
+      <li class="nav-item">
+        <a class="nav-link <?= basename($_SERVER['SCRIPT_NAME']) === 'profile.php' ? 'active' : '' ?>" href="<?= $BASE_URL ?>profile.php">Profile</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link <?= basename($_SERVER['SCRIPT_NAME']) === 'dashboard_Mitra.php' ? 'active' : '' ?>" href="<?= $BASE_URL ?>dashboard_Mitra.php">Dashboard</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link <?= basename($_SERVER['SCRIPT_NAME']) === 'rentals.php' ? 'active' : '' ?>" href="<?= $BASE_URL ?>mitra/rentals.php">Rentals</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link <?= basename($_SERVER['SCRIPT_NAME']) === 'kelola_kendaraan.php' ? 'active' : '' ?>" href="<?= $BASE_URL ?>mitra/kelola_kendaraan.php">Kendaraan</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link <?= basename($_SERVER['SCRIPT_NAME']) === 'settings.php' ? 'active' : '' ?>" href="<?= $BASE_URL ?>settings.php">Settings</a>
+      </li>
+      <?php endif; ?>
     <?php endif; ?>
   </ul>
 
-  <button class="logout-btn" onclick="window.location.href='/Rent.ID/app/auth.php?action=logout'">
-    Logout
-</button>
+  <?php if ($role): ?>
+    <button class="logout-btn btn btn-outline-light" onclick="window.location.href='<?= $BASE_URL ?>logout.php'">
+      Logout
+    </button>
+  <?php endif; ?>
 </nav>
 
 
-<!-- ===== STYLING ===== -->
-<style>
-  nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #93BAFF;
-    padding: 12px 25px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  }
+<!-- Navbar styling moved to `public/style/navbar.css` to keep nav appearance consistent. -->
+<script>
+  (function(){
+      try{
+        // Inject Bootstrap 5 CSS first so site styles can build on it
+        var bs = document.createElement('link');
+        bs.rel = 'stylesheet';
+        bs.href = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css';
+        bs.integrity = 'sha384-6m2bQ5fZQbXfDq1xO1H8Pq9p6mZQ2X1q9a8qv2q1r1p6s3k4b2m1j0p8z7y6x5w4';
+        bs.crossOrigin = 'anonymous';
+        document.head.appendChild(bs);
 
-  nav ul {
-    list-style: none;
-    display: flex;
-    gap: 20px;
-    margin: 0;
-    padding: 0;
-  }
+        // Add canonical navbar CSS
+        var cssLink = document.createElement('link');
+        cssLink.rel = 'stylesheet';
+        cssLink.href = '<?= $BASE_URL ?>style/navbar.css';
+        document.head.appendChild(cssLink);
 
-  nav a {
-    text-decoration: none;
-    color: white;
-    font-weight: 500;
-    transition: color 0.2s ease, border-bottom 0.2s ease;
-  }
+        // Add a small site stylesheet (site-wide helpers / overrides)
+        var s = document.createElement('link');
+        s.rel = 'stylesheet';
+        s.href = '<?= $BASE_URL ?>style/site.css';
+        document.head.appendChild(s);
+      } catch(e) { /* ignore */ }
+  })();
+</script>
 
-  nav a:hover,
-  nav a.active {
-    color: #0c2c5d;
-    border-bottom: 2px solid #0c2c5d;
-    padding-bottom: 2px;
-  }
+<!-- Inject Bootstrap JS bundle (Popper included) at end of body via a small script -->
+<script>
+  (function(){
+    try{
+      var s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js';
+      s.integrity = 'sha384-3y5X1k8m2a4b6c7d8e9f0g1h2i3j4k5l6m7n8o9p0q1r2s3t4u5v6w7x8y9z0a1b';
+      s.crossOrigin = 'anonymous';
+      document.body.appendChild(s);
+    }catch(e){/* ignore */}
+  })();
+</script>
 
-  .logout-btn {
-    background-color: white;
-    color: #93BAFF;
-    border: none;
-    border-radius: 20px;
-    padding: 8px 18px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-  }
+<!-- PWA: dynamically add manifest and register service worker -->
+<script>
+  (function(){
+    // inject manifest link into head
+    try{
+      var manifestLink = document.createElement('link');
+      manifestLink.rel = 'manifest';
+      manifestLink.href = '<?= $BASE_URL ?>manifest.json';
+      document.head.appendChild(manifestLink);
 
-  .logout-btn:hover {
-    background-color: #f3f3f3;
-    transform: scale(1.05);
-  }
-</style>
+      var meta = document.createElement('meta');
+      meta.name = 'theme-color';
+      meta.content = '#6c63ff';
+      document.head.appendChild(meta);
+
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('<?= $BASE_URL ?>service-worker.js')
+          .then(function(reg){
+            // console.log('SW registered', reg);
+          }).catch(function(err){
+            // console.log('SW register failed', err);
+          });
+      }
+    } catch(e) {
+      // ignore in older browsers
+    }
+  })();
+</script>
+
+<script>
+  // Ensure consistent page layout: add top padding to body equal to navbar height
+  (function(){
+    function applyBodyPadding(){
+      var nav = document.querySelector('nav');
+      if (!nav) return;
+      var h = nav.offsetHeight;
+      // For profile/settings pages we prefer the header to visually connect with the nav
+      // so we don't add extra top padding (the page header will sit below the fixed nav).
+      if (nav.classList.contains('page-profile') || nav.classList.contains('page-settings') || nav.classList.contains('page-edit_profile')) {
+        document.documentElement.style.paddingTop = '0px';
+        document.body.style.paddingTop = '0px';
+      } else {
+        // apply to body and html so pages maintain consistent spacing
+        document.documentElement.style.paddingTop = h + 'px';
+        document.body.style.paddingTop = h + 'px';
+      }
+    }
+    // run on load and resize (debounced)
+    var resizeTimer;
+    window.addEventListener('load', applyBodyPadding);
+    window.addEventListener('resize', function(){ clearTimeout(resizeTimer); resizeTimer = setTimeout(applyBodyPadding, 120); });
+  })();
+</script>

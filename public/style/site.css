@@ -1,0 +1,58 @@
+/* Global site stylesheet to harmonize with Bootstrap 5 and navbar
+   Keeps small, non-invasive rules so pages improve without heavy edits.
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+:root{
+  --brand-500: #6d59e0;
+  --brand-600: #8c59d4;
+  --accent: #3291B6;
+  --muted: #f1f5f9;
+}
+
+html,body{ height:100%; }
+body{
+  font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  background: linear-gradient(180deg, #f7fafc 0%, #eef2f7 100%);
+  color: #111827;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* Improve default container spacing so pages look consistent */
+.container, .container-fluid{ padding-left: 28px; padding-right: 28px; }
+
+/* Cards: soft shadow and rounded corners */
+.card, .profile-container, .container .card {
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(16,24,40,0.06);
+}
+
+/* Buttons: map older custom button classes to Bootstrap-like look */
+.btn, .profile-btn {
+  border-radius: 10px;
+}
+
+.btn-primary, .btn.btn-primary {
+  background: linear-gradient(90deg, var(--brand-500), var(--brand-600));
+  border: none;
+}
+
+/* Navbar tuning (keeps existing navbar.css but ensures Bootstrap nav spacing plays well) */
+nav.navbar { padding: 0 20px; }
+.navbar .brand img { width:44px; height:44px; }
+
+/* Avatar overlap helper: bring avatar above nav when needed */
+.profile-avatar { z-index: 10002; }
+
+/* Make tables look nicer */
+table { background: #fff; border-radius: 8px; overflow: hidden; }
+th { background: linear-gradient(90deg, rgba(109,89,224,0.95), rgba(140,89,212,0.96)); color: #fff; }
+
+a { text-decoration: none; }
+
+/* Small responsive tweaks */
+@media (max-width: 720px) {
+  .container, .container-fluid{ padding-left: 12px; padding-right: 12px; }
+}
