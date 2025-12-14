@@ -7,6 +7,15 @@ require_once __DIR__ . '/../../app/kelola_logic.php';
 $kendaraan = new KelolaKendaraan();
 $id_mitra = $_SESSION['id_mitra'];
 $dataKendaraan = $kendaraan->getKendaraanByMitra($id_mitra);
+
+// === AUTO UPDATE STATUS BERDASARKAN TANGGAL ===
+$transaksiMitra = $kendaraan->getTransaksiByMitra($id_mitra);
+
+foreach ($transaksiMitra as $trx) {
+    $kendaraan->aktifkanJikaHariIni($trx);
+    $kendaraan->selesaikanJikaLewat($trx);
+}
+
 ?>
 
 <?php include_once __DIR__ . '/../navbar.php'; ?>

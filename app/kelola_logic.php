@@ -143,28 +143,30 @@ public function getTransaksiByMitra($id_mitra)
     }
 
     // otomatis aktif jika tanggal_mulai tiba
-    public function aktifkanJikaHariIni($trx)
-    {
-        $today = date("Y-m-d");
+public function aktifkanJikaHariIni($trx)
+{
+    $today = date("Y-m-d");
 
-        if ($trx['status_rental'] == 'acc' && $today >= $trx['tanggal_mulai']) {
+    if ($trx['status_rental'] === 'dijadwalkan'
+        && $today >= $trx['tanggal_mulai']) {
 
-            $this->updateStatusTransaksi($trx['rental_id'], 'aktif');
-            $this->updateStatusKendaraan($trx['kendaraan_id'], 'dipinjam');
-        }
+        $this->updateStatusTransaksi($trx['rental_id'], 'aktif');
+        $this->updateStatusKendaraan($trx['kendaraan_id'], 'disewa');
     }
+}
 
-    // otomatis selesai jika sudah lewat
-    public function selesaikanJikaLewat($trx)
-    {
-        $today = date("Y-m-d");
+public function selesaikanJikaLewat($trx)
+{
+    $today = date("Y-m-d");
 
-        if ($trx['status_rental'] == 'aktif' && $today > $trx['tanggal_selesai']) {
+    if ($trx['status_rental'] === 'aktif'
+        && $today > $trx['tanggal_selesai']) {
 
-            $this->updateStatusTransaksi($trx['rental_id'], 'selesai');
-            $this->updateStatusKendaraan($trx['kendaraan_id'], 'tersedia');
-        }
+        $this->updateStatusTransaksi($trx['rental_id'], 'selesai');
+        $this->updateStatusKendaraan($trx['kendaraan_id'], 'tersedia');
     }
+}
+
 }
 
 
@@ -230,17 +232,15 @@ if (isset($_GET['action']) && $_GET['action'] == 'update_rental') {
     $kendaraan->updateStatusTransaksi($id, $status);
 
     // update status kendaraan
-    if ($status == "dijadwalkan") {
-        $kendaraan->updateStatusKendaraan($trx['kendaraan_id'], "booking");
-    } elseif ($status == "aktif") {
-        $kendaraan->updateStatusKendaraan($trx['kendaraan_id'], "dipinjam");
+    if ($status == "dijadwalkan" || $status == "aktif") {
+        $kendaraan->updateStatusKendaraan($trx['kendaraan_id'], "disewa");
     } elseif ($status == "selesai" || $status == "dibatalkan") {
         $kendaraan->updateStatusKendaraan($trx['kendaraan_id'], "tersedia");
     }
 
-    header("Location: ../public/mitra/rentals.php");
-    exit;
-}
+        header("Location: ../public/mitra/rentals.php");
+        exit;
+    }
 /* ------------ KONFIRMASI COD --------------- */
 if (isset($_GET['action']) && $_GET['action'] == 'konfirmasi_cod') {
 

@@ -155,6 +155,62 @@ public function getDetailTransaksi($id_transaksi)
     
     return $stmt->get_result()->fetch_assoc(); // return array atau null
 }
+// ===============================
+// UPDATE STATUS TRANSAKSI
+// ===============================
+public function updateStatusTransaksi($rentalId, $status)
+{
+    global $conn;
+
+    $sql = "UPDATE transaksi SET status_rental=? WHERE rental_id=?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("si", $status, $rentalId);
+    return $stmt->execute();
+}
+
+// ===============================
+// UPDATE STATUS KENDARAAN
+// ===============================
+public function updateStatusKendaraan($kendaraanId, $status)
+{
+    global $conn;
+
+    $sql = "UPDATE kendaraan SET status_kendaraan=? WHERE kendaraan_id=?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("si", $status, $kendaraanId);
+    return $stmt->execute();
+}
+
+// ===============================
+// AUTO AKTIF JIKA TANGGAL MULAI
+// ===============================
+public function aktifkanJikaHariIni($trx)
+{
+    $today = date("Y-m-d");
+
+    if ($trx['status_rental'] === 'dijadwalkan'
+        && $today >= $trx['tanggal_mulai']) {
+
+        $this->updateStatusTransaksi($trx['rental_id'], 'aktif');
+        $this->updateStatusKendaraan($trx['kendaraan_id'], 'dipinjam');
+    }
+}
+
+// ===============================
+// AUTO SELESAI JIKA LEWAT TANGGAL
+// ===============================
+public function selesaikanJikaLewat($trx)
+{
+    $today = date("Y-m-d");
+
+    if ($trx['status_rental'] === 'aktif'
+        && $today > $trx['tanggal_selesai']) {
+
+        $this->updateStatusTransaksi($trx['rental_id'], 'selesai');
+        $this->updateStatusKendaraan($trx['kendaraan_id'], 'tersedia');
+    }
+}
+
 }
 
 

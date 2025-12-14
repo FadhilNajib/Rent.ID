@@ -10,6 +10,15 @@ $nama_mitra = $_SESSION['nama'];
 $kelola = new KelolaKendaraan();
 $dataTransaksi = $kelola->getTransaksiByMitra($id_mitra);
 
+// AUTO UPDATE STATUS BERDASARKAN TANGGAL
+foreach ($dataTransaksi as $trx) {
+    $kelola->aktifkanJikaHariIni($trx);
+    $kelola->selesaikanJikaLewat($trx);
+}
+
+// ambil ulang data supaya status terbaru tampil
+$dataTransaksi = $kelola->getTransaksiByMitra($id_mitra);
+
 include_once __DIR__ . '/../navbar.php';
 ?>
 

@@ -10,6 +10,15 @@ $nama        = $_SESSION['nama'];
 $kelola = new KendaraanCustomer();
 $transaksi = $kelola->getTransaksiByCustomer($customer_id);
 
+// AUTO SYNC STATUS
+foreach ($transaksi as $trx) {
+    $kelola->aktifkanJikaHariIni($trx);
+    $kelola->selesaikanJikaLewat($trx);
+}
+
+// AMBIL ULANG BIAR DATA TERBARU
+$transaksi = $kelola->getTransaksiByCustomer($customer_id);
+
 include_once __DIR__ . '/../navbar.php';
 ?>
 
