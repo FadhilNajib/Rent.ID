@@ -2,7 +2,6 @@
 include '../app/auth.php';
 requireLogin('customer'); // hanya bisa diakses mitra
 include __DIR__ . '/../config/koneksi.php';
-include 'navbar.php';
 ?>
 
 <!DOCTYPE html>
@@ -21,10 +20,26 @@ include 'navbar.php';
     .feature p{ margin:0; color:#444; font-size:14px; }
     .cta-row{ display:flex; gap:12px; margin-top:18px; }
     .cta{ background:linear-gradient(90deg,#6c63ff,#764ba2); color:#fff; padding:10px 14px; border-radius:10px; text-decoration:none; font-weight:600; }
+    /* Tidy watermark and dashboard logo (rendered in-flow to avoid overlap) */
+    #wpa { display: none; }
+    /* reduce bottom padding now that logo is in the flow */
+    body.dashboard-page { padding-bottom: 48px; }
+
+    /* Logo container placed in normal document flow below the features */
+    .dashboard-logo { display:flex; justify-content:center; margin: 22px 0 48px; }
+    .dashboard-logo img { width: 140px; max-width: 36vw; height: auto; display:block; }
+
+    @media (max-width: 1024px) {
+      .dashboard-logo img { width: 120px; }
+    }
+    @media (max-width: 600px) {
+      .dashboard-logo img { width: 96px; max-width: 28vw; }
+    }
   </style>
   <link rel="icon" type="image/png" sizes="32x32" href="asset/icon.png">
 </head>
 <body class="dashboard-page">
+<?php include 'navbar.php'; ?>
 
 
   <!-- Content -->
@@ -61,30 +76,12 @@ include 'navbar.php';
     </div>
   </section>
 
-  <!-- Dynamic watermark (WPA) -->
-  <?php $wpa_user = htmlspecialchars($_SESSION['nama'] ?? 'Guest'); ?>
-  <div id="wpa" aria-hidden="true">RENT.ID — <?= $wpa_user ?></div>
+  <!-- watermark removed to avoid showing session info on the page -->
 
-  <script>
-    // Make WPA slightly dynamic: append local time and update every 30s
-    (function(){
-      var el = document.getElementById('wpa');
-      function update(){
-        var now = new Date();
-        var hh = String(now.getHours()).padStart(2,'0');
-        var mm = String(now.getMinutes()).padStart(2,'0');
-        el.textContent = 'RENT.ID — <?= $wpa_user ?> · ' + hh + ':' + mm;
-      }
-      update();
-      setInterval(update, 30000);
-    })();
-  </script>
-
-
-  <!-- Footer -->
-  <footer>
+  <!-- Dashboard logo (in-flow) -->
+  <div class="dashboard-logo" aria-hidden="true">
     <img src="asset/logo.png" alt="RENT.ID Logo" />
-  </footer>
+  </div>
 
 </body>
 </html>

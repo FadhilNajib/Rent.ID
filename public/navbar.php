@@ -27,6 +27,15 @@ $pageClass = 'page-' . preg_replace('/[^a-zA-Z0-9_\-]/', '', $pageName);
     <div class="brand">
       <img src="<?= $BASE_URL ?>asset/logo.png" alt="RENT.ID" />
       <span class="brand-name">RENT.ID</span>
+      <?php if (isset($_SESSION['nama']) && trim($_SESSION['nama']) !== ''):
+        $__nav_name = trim($_SESSION['nama']);
+        $__nav_initial = mb_strtoupper(mb_substr($__nav_name, 0, 1));
+      ?>
+        <span class="nav-user" title="<?= htmlspecialchars($__nav_name) ?>">
+          <span class="nav-avatar"><?= htmlspecialchars($__nav_initial) ?></span>
+          <span class="nav-name"><?= htmlspecialchars($__nav_name) ?></span>
+        </span>
+      <?php endif; ?>
     </div>
   </div>
   <ul class="nav-menu" id="navMenu">
@@ -167,14 +176,13 @@ $pageClass = 'page-' . preg_replace('/[^a-zA-Z0-9_\-]/', '', $pageName);
       var h = nav.offsetHeight;
       // For profile/settings pages we prefer the header to visually connect with the nav
       // so we don't add extra top padding (the page header will sit below the fixed nav).
-      if (nav.classList.contains('page-profile') || nav.classList.contains('page-settings') || nav.classList.contains('page-edit_profile')) {
-        document.documentElement.style.paddingTop = '0px';
-        document.body.style.paddingTop = '0px';
-      } else {
-        // apply to body and html so pages maintain consistent spacing
-        document.documentElement.style.paddingTop = h + 'px';
-        document.body.style.paddingTop = h + 'px';
-      }
+        if (nav.classList.contains('page-profile') || nav.classList.contains('page-settings') || nav.classList.contains('page-edit_profile')) {
+          // keep profile/settings visually connected to nav
+          document.body.style.paddingTop = '0px';
+        } else {
+          // only apply padding to body (not to the html element) so the nav sits flush at the very top
+          document.body.style.paddingTop = h + 'px';
+        }
     }
     // run on load and resize (debounced)
     var resizeTimer;

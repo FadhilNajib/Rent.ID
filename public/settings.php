@@ -26,8 +26,66 @@ $data = $stmt->get_result()->fetch_assoc();
 // Handle form submission untuk update password
 $message = '';
 $message_type = '';
+$message_action = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+// Handle form submission untuk update informasi akun (action=update_info)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'update_info') {
+    $message_action = 'update_info';
+    $nama = trim($_POST['nama'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $raw_no = trim($_POST['no_telepon'] ?? '');
+    $no_telepon = preg_replace('/[^0-9+]/', '', $raw_no);
+    $no_telepon = preg_replace('/(?!^)\+/', '', $no_telepon);
+
+    if (empty($nama) || empty($email) || empty($no_telepon)) {
+        $message = 'Semua field wajib diisi!';
+        $message_type = 'error';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $message = 'Format email tidak valid!';
+        $message_type = 'error';
+    } elseif (!preg_match('/^(\+62|62|0)[0-9]{9,12}$/', $no_telepon)) {
+        $message = 'Format nomor telepon tidak valid! (08123456789 atau +628123456789)';
+        $message_type = 'error';
+    } else {
+        $table = ($role === 'customer') ? 'customer' : 'mitra';
+        $id_col = ($role === 'customer') ? 'id_customer' : 'id_mitra';
+        if ($role === 'customer') {
+            $update_query = "UPDATE customer SET nama = ?, email = ?, no_telepon = ? WHERE id_customer = ?";
+        } else {
+            $update_query = "UPDATE mitra SET nama_mitra = ?, email = ?, no_telepon = ? WHERE id_mitra = ?";
+        }
+
+        $update_stmt = $conn->prepare($update_query);
+        if (!$update_stmt) {
+            $message = 'Gagal menyiapkan query: ' . $conn->error;
+            $message_type = 'error';
+        } else {
+            $id_int = (int) $id;
+            $update_stmt->bind_param('sssi', $nama, $email, $no_telepon, $id_int);
+            if ($update_stmt->execute()) {
+                if ($update_stmt->affected_rows > 0) {
+                    $message = 'Informasi akun berhasil diperbarui.';
+                    $message_type = 'success';
+                    // refresh data
+                    $stmt = $conn->prepare($query);
+                    $stmt->bind_param('i', $id_int);
+                    $stmt->execute();
+                    $data = $stmt->get_result()->fetch_assoc();
+                } else {
+                    $message = 'Tidak ada perubahan yang disimpan (mungkin nilai baru sama dengan yang lama).';
+                    $message_type = 'error';
+                }
+            } else {
+                $message = 'Gagal menyimpan perubahan: ' . $update_stmt->error;
+                $message_type = 'error';
+            }
+        }
+    }
+}
+
+// Handle form submission untuk update password
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') !== 'update_info') {
+    $message_action = 'password';
     $old_password = $_POST['old_password'] ?? '';
     $new_password = $_POST['new_password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
@@ -301,11 +359,35 @@ body {
     <h1 class="settings-title-header">Pengaturan</h1>
 </div>
 
+<script>
+// Toggle edit info panel
+document.addEventListener('DOMContentLoaded', function(){
+    var btn = document.getElementById('editInfoBtn');
+    var panel = document.getElementById('editInfoPanel');
+    var cancel = document.getElementById('cancelEditBtn');
+    if (btn && panel) {
+        btn.addEventListener('click', function(){
+            panel.style.display = (panel.style.display === 'none' || panel.style.display === '') ? 'block' : 'none';
+            if (panel.style.display === 'block') btn.textContent = 'Tutup Editor'; else btn.textContent = 'Edit Informasi';
+        });
+    }
+    if (cancel && panel) {
+        cancel.addEventListener('click', function(){ panel.style.display = 'none'; if (btn) btn.textContent = 'Edit Informasi'; });
+    }
+});
+</script>
+
 <div class="settings-wrapper">
     <!-- INFORMASI AKUN -->
     <div class="settings-card">
         <h2 class="settings-card-title">Informasi Akun</h2>
-        
+
+        <?php if ($message && $message_action === 'update_info'): ?>
+            <div class="message <?= $message_type ?>" style="margin-bottom:16px;">
+                <?= htmlspecialchars($message) ?>
+            </div>
+        <?php endif; ?>
+
         <div class="settings-info">
             <div class="settings-info-item">
                 <span class="settings-info-label">Nama</span>
@@ -326,8 +408,32 @@ body {
         </div>
 
         <div class="button-group">
-            <button class="btn btn-primary" onclick="alert('Fitur edit profil akan segera hadir')">Edit Informasi</button>
+            <button id="editInfoBtn" class="btn btn-primary">Edit Informasi</button>
             <button class="btn btn-secondary" onclick="history.back()">Kembali</button>
+        </div>
+
+        <div id="editInfoPanel" style="display:none; margin-top:20px;">
+            <form method="POST" action="">
+                <input type="hidden" name="action" value="update_info">
+                <div class="form-group">
+                    <label for="nama">Nama</label>
+                    <input type="text" id="nama" name="nama" value="<?= htmlspecialchars($data['nama']) ?>" required maxlength="100">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" value="<?= htmlspecialchars($data['email']) ?>" required maxlength="100">
+                </div>
+                <div class="form-group">
+                    <label for="no_telepon">Nomor Telepon</label>
+                    <input type="tel" id="no_telepon" name="no_telepon" value="<?= htmlspecialchars($data['no_telepon']) ?>" required maxlength="20">
+                    <div class="helper-text">Contoh: 08123456789 atau +628123456789 (tanpa spasi)</div>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary">Simpan Informasi</button>
+                    <button type="button" id="cancelEditBtn" class="btn btn-secondary">Batal</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -335,7 +441,7 @@ body {
     <div class="settings-card">
         <h2 class="settings-card-title">Keamanan - Ubah Password</h2>
 
-        <?php if ($message): ?>
+        <?php if ($message && $message_action === 'password'): ?>
             <div class="message <?= $message_type ?>">
                 <?= htmlspecialchars($message) ?>
             </div>

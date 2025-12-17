@@ -8,8 +8,8 @@ if (!isset($_SESSION['id']) || !isset($_SESSION['role'])) {
     exit;
 }
 
-$id   = $_SESSION['id'];
-$role = $_SESSION['role'];
+$id   = (int) ($_SESSION['id'] ?? 0);
+$role = $_SESSION['role'] ?? null;
 $message = '';
 $message_type = '';
 
@@ -29,7 +29,12 @@ $data = $stmt->get_result()->fetch_assoc();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nama = trim($_POST['nama'] ?? '');
     $email = trim($_POST['email'] ?? '');
-    $no_telepon = trim($_POST['no_telepon'] ?? '');
+    // normalize phone: remove spaces and non-digit/+ characters, keep a single leading + if present
+    $raw_no = trim($_POST['no_telepon'] ?? '');
+    // remove spaces, parentheses and dashes but keep digits and plus
+    $no_telepon = preg_replace('/[^0-9+]/', '', $raw_no);
+    // ensure only a single leading plus (remove any '+' not at start)
+    $no_telepon = preg_replace('/(?!^)\+/', '', $no_telepon);
     $alamat = trim($_POST['alamat'] ?? '');
 
     // Validasi
@@ -39,8 +44,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $message = 'Format email tidak valid!';
         $message_type = 'error';
-    } elseif (!preg_match('/^(\+62|0)[0-9]{9,12}$/', $no_telepon)) {
-        $message = 'Format nomor telepon tidak valid!';
+    } elseif (!preg_match('/^(\+62|62|0)[0-9]{9,12}$/', $no_telepon)) {
+        $message = 'Format nomor telepon tidak valid! (contoh: 08123456789 atau +628123456789)';
         $message_type = 'error';
     } else {
         // Update database
@@ -51,19 +56,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $update_stmt = $conn->prepare($update_query);
-        $update_stmt->bind_param("ssssi", $nama, $email, $no_telepon, $alamat, $id);
-
-        if ($update_stmt->execute()) {
-            $message = 'Profil berhasil diperbarui!';
-            $message_type = 'success';
-            // Refresh data
-            $stmt = $conn->prepare($query);
-            $stmt->bind_param("i", $id);
-            $stmt->execute();
-            $data = $stmt->get_result()->fetch_assoc();
-        } else {
-            $message = 'Gagal memperbarui profil!';
+        if (!$update_stmt) {
+            $message = 'Gagal menyiapkan query: ' . $conn->error;
             $message_type = 'error';
+        } else {
+            $update_stmt->bind_param("ssssi", $nama, $email, $no_telepon, $alamat, $id);
+            if ($update_stmt->execute()) {
+                // check affected rows to ensure update happened
+                if ($update_stmt->affected_rows > 0) {
+                    $message = 'Profil berhasil diperbarui!';
+                    $message_type = 'success';
+                    // Refresh data from DB
+                    $stmt = $conn->prepare($query);
+                    $stmt->bind_param("i", $id);
+                    $stmt->execute();
+                    $data = $stmt->get_result()->fetch_assoc();
+                } else {
+                    // No rows changed: could be because submitted values equal existing values
+                    $message = 'Tidak ada perubahan yang disimpan (mungkin nilai baru sama dengan yang lama). Jika kolom `no_telepon` berjenis INT, nomor panjang dapat dipotong — pertimbangkan mengubah tipe kolom menjadi VARCHAR(20).';
+                    $message_type = 'error';
+                }
+            } else {
+                $message = 'Gagal memperbarui profil: ' . $update_stmt->error;
+                $message_type = 'error';
+            }
         }
     }
 }
@@ -326,7 +342,7 @@ body {
                     required
                     maxlength="15"
                 >
-                <div class="helper-text">Format: 08XXXXXXXXX atau +628XXXXXXXXX</div>
+                <div class="helper-text">Format: 08123456789 atau +628123456789 (tanpa spasi atau tanda '-')</div>
             </div>
 
             <div class="form-group">

@@ -3,12 +3,12 @@
 nav {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: center; /* vertically center nav content */
   gap: 16px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 0 28px;
-  min-height: 64px; /* fixed minimum height for consistency */
-  height: 64px; /* fixed height to prevent wrapping changing size */
+  padding: 0 28px; /* keep minimal horizontal padding, vertical centering via height */
+  min-height: 56px;
+  height: 56px; /* fixed height so content centers reliably */
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
   border-radius: 0; /* make full-width bar without rounded outer gaps */
   position: fixed; /* fixed so every page sees the same nav height and position */
@@ -46,12 +46,13 @@ nav a {
   color: #ffffff;
   font-weight: 600;
   font-size: 15px;
-  padding: 0 10px; /* horizontal padding only; vertical alignment via height */
+  /* keep text visually higher while adding bottom padding so underline sits below */
+  padding: 6px 10px 6px 10px; /* balanced vertical padding for centered layout */
   position: relative;
+  z-index: 2; /* ensure link text sits above the pseudo-element */
   transition: color 0.2s ease;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  height: 100%;
 }
 
 /* Ensure nav text is white across pages while keeping interactive states intact */
@@ -67,8 +68,9 @@ nav a::after {
   position: absolute;
   left: 8px;
   right: 8px;
-  bottom: 4px; /* move underline closer to nav bottom */
-  height: 3px;
+  bottom: 8px; /* clearly below the text */
+  height: 2px; /* slim indicator that reads as an underline */
+  z-index: 1; /* behind link (link now z-index:2) */
   background: rgba(255,255,255,0.95);
   border-radius: 3px;
   transform: scaleX(0);
@@ -86,16 +88,20 @@ nav a.active::after {
   background: rgba(255, 255, 255, 0.18);
   color: #ffffff;
   border: 2px solid rgba(255, 255, 255, 0.45);
-  border-radius: 8px;
-  padding: 8px 18px;
+  border-radius: 12px;
+  padding: 6px 12px;
   cursor: pointer;
   font-weight: 600;
-  font-size: 14px;
-  transition: all 0.2s ease;
+  font-size: 13px;
+  transition: all 0.15s ease;
   flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: auto;
 }
 
-.logout-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.08); }
+.logout-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(0,0,0,0.06); }
 
 /* RESPONSIVE: keep height consistent but allow scrolling for many items */
 @media (max-width: 768px) {
@@ -133,8 +139,63 @@ nav a.active::after {
   border-radius: 10px;
   margin-left: 4px;
 }
+.dashboard-theme .brand img { width:44px; height:44px; }
 
-.dashboard-theme .brand img { width:36px; height:36px; }
+.dashboard-theme .brand-name { font-size: 18px; margin-left: 8px; }
+
+/* User name next to brand on dashboard */
+.dashboard-theme .nav-user {
+  color: rgba(255,255,255,0.95);
+  font-weight: 600;
+  margin-left: 8px;
+  font-size: 14px;
+  display: inline-block;
+  padding: 4px 8px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  line-height: 1;
+  opacity: 0.98;
+}
+
+/* Base nav-user styling for non-dashboard pages (brand area) */
+.nav-user {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  margin-left: 8px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+  border-radius: 14px;
+  color: rgba(255,255,255,0.95);
+  font-weight: 600;
+  font-size: 14px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+}
+
+.nav-avatar {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg,#52c7f6,#4b9ff2);
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+
+.nav-name { white-space: nowrap; max-width: 120px; overflow: hidden; text-overflow: ellipsis; }
+
+@media (max-width: 480px) {
+  .nav-user { padding: 6px 8px; gap: 6px; }
+  .nav-name { display: none; }
+  .brand-name{ display: none; }
+}
+
+.dashboard-theme .nav-left { display:flex; align-items:center; gap:12px; margin-right: 16px; }
 
 .dashboard-theme .nav-menu { gap: 22px; display:flex; flex:1; justify-content:flex-start; align-items:center; overflow:visible; }
 
@@ -145,14 +206,53 @@ nav a.active::after {
 .dashboard-theme .logout-btn {
   background: rgba(255,255,255,0.12);
   border: 1px solid rgba(255,255,255,0.26);
-  padding: 8px 20px;
-  border-radius: 18px;
+  padding: 6px 14px;
+  border-radius: 14px;
   align-self: center;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
 }
 
 @media (max-width: 768px) {
   .dashboard-theme { left: 8px; right: 8px; top: 8px; }
 }
+
+/* Page-specific tuning: make nav controls slightly smaller on add-vehicle page */
+nav.page-tambah_kendaraan .logout-btn {
+  padding: 6px 10px;
+  font-size: 13px;
+  border-radius: 12px;
+}
+/* Ensure page-level generic `button` rules don't force the logout to full width */
+nav.page-tambah_kendaraan .logout-btn {
+  width: auto !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  min-width: 72px;
+  max-width: 160px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Ensure Logout is vertically centered even if page styles alter button box model */
+nav.page-tambah_kendaraan {
+  /* keep nav as positioned container (it is fixed); nothing else needed */
+}
+nav.page-tambah_kendaraan .logout-btn {
+  /* position absolutely so it's visually aligned independent of page button rules */
+  position: absolute !important;
+  right: 28px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  line-height: 1 !important;
+  margin-top: 0 !important;
+  height: 36px; /* ensure consistent vertical size */
+  padding: 6px 12px !important;
+}
+nav.page-tambah_kendaraan .nav-avatar { width:28px; height:28px; font-size:12px; }
+nav.page-tambah_kendaraan .nav-user { padding: 4px 8px; font-size:13px; }
 
 /* Per-page sizing adjustments (no page files changed) */
 nav.page-dashboard_Customer { height: 56px; min-height:56px; }
@@ -190,6 +290,7 @@ nav.page-profile a::after,
 nav.page-settings a::after,
 nav.page-edit_profile a::after {
   background: rgba(255,255,255,0.85);
-  bottom: 4px;
-  height: 3px;
+  bottom: 8px;
+  height: 2px;
+  z-index: 0;
 }

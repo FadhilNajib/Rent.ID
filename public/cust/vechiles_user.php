@@ -3,14 +3,15 @@ include __DIR__ . '/../../app/auth.php';
 requireLogin('customer');
 
 include __DIR__ . '/../../app/kendaraan_cust_logic.php';
-include __DIR__ . '/../navbar.php';
 
 // Ambil pencarian
 $search = isset($_GET['search']) ? trim($_GET['search']) : "";
 
 // Ambil data kendaraan dari BE
 $kendaraan = new KendaraanCustomer();
-$result = $kendaraan->getMotorTersedia($search);
+// Ambil semua kendaraan yang tersedia (motor + mobil) — kosongkan filter jenis
+$result = $kendaraan->getKendaraanTersedia($search);
+
 ?>
 
 <!DOCTYPE html>
@@ -20,7 +21,8 @@ $result = $kendaraan->getMotorTersedia($search);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar Motor | Rent.ID</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #f4f6f9; margin: 0; padding: 0; }
+        /* account for fixed navbar: give page top padding so title is visible */
+        body { font-family: Arial, sans-serif; background: #f4f6f9; margin: 0; padding: 0 0 0 0; padding-top: 80px; }
         .container { width: 90%; max-width: 1100px; margin: 30px auto; }
         h1 { text-align: center; color: #333; }
         form { text-align: center; margin-bottom: 20px; }
@@ -34,15 +36,20 @@ $result = $kendaraan->getMotorTersedia($search);
         .card img { width: 100%; height: 180px; object-fit: cover; }
         .card-content { padding: 15px; }
         .btn-sewa { display: inline-block; padding: 7px 12px; background: #28a745; color: white; text-decoration: none; border-radius: 5px; }
+        @media (max-width: 768px) {
+            body { padding-top: 72px; }
+            .container { margin-top: 10px; }
+        }
     </style>
 </head>
 <body>
+<?php include __DIR__ . '/../navbar.php'; ?>
 
 <div class="container">
-    <h1>🛵 Daftar Motor Tersedia</h1>
+    <h1>🚗🛵 Daftar Kendaraan Tersedia</h1>
 
     <form method="GET">
-        <input type="text" name="search" placeholder="Cari motor berdasarkan merk, model, atau mitra..." value="<?= htmlspecialchars($search) ?>">
+        <input type="text" name="search" placeholder="Cari kendaraan berdasarkan merk, model, atau mitra..." value="<?= htmlspecialchars($search) ?>">
         <button type="submit">Cari</button>
     </form>
 
@@ -51,11 +58,26 @@ $result = $kendaraan->getMotorTersedia($search);
             <?php while ($row = $result->fetch_assoc()): ?>
                 <div class="card">
 
-                    <?php if (!empty($row['foto'])): ?>
-                        <img src="data:image/jpeg;base64,<?= base64_encode($row['foto']) ?>" alt="Foto Motor">
-                    <?php else: ?>
-                        <img src="https://via.placeholder.com/300x180?text=No+Image" alt="No Image">
-                    <?php endif; ?>
+                    <?php
+                        // Determine image source: prefer file in `uploads/`, otherwise if the DB contains
+                        // raw binary image data (BLOB) render as data URI. Fallback to a placeholder.
+                        $fotoField = $row['foto'] ?? '';
+                        $imgSrc = 'https://via.placeholder.com/300x180?text=No+Image';
+                        $uploadPath = __DIR__ . '/../../uploads/' . $fotoField;
+                        if (!empty($fotoField) && file_exists($uploadPath)) {
+                            $imgSrc = '../../uploads/' . rawurlencode($fotoField);
+                        } elseif (!empty($fotoField) && strlen($fotoField) > 64) {
+                            if (function_exists('finfo_buffer')) {
+                                $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                                $mime = finfo_buffer($finfo, $fotoField) ?: 'image/jpeg';
+                                finfo_close($finfo);
+                            } else {
+                                $mime = 'image/jpeg';
+                            }
+                            $imgSrc = 'data:' . $mime . ';base64,' . base64_encode($fotoField);
+                        }
+                    ?>
+                    <img src="<?= $imgSrc ?>" alt="Foto Kendaraan">
 
                     <div class="card-content">
                         <h3><?= htmlspecialchars($row['merk'] . ' ' . $row['model']) ?></h3>

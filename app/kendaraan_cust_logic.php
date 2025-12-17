@@ -6,20 +6,40 @@ class KendaraanCustomer {
     // Ambil daftar motor untuk halaman vehicles_user
     public function getMotorTersedia($search = "") {
         global $conn;
+        // kept for backward compatibility: delegate to general method
+        return $this->getKendaraanTersedia($search, 'motor');
+    }
+
+    /**
+     * Ambil kendaraan tersedia. Jika $jenis diset (mis. 'motor' atau 'mobil'),
+     * hasilnya akan difilter berdasarkan jenis tersebut. Jika kosong, kembalikan semua jenis.
+     */
+    public function getKendaraanTersedia($search = "", $jenis = '') {
+        global $conn;
 
         $query = "SELECT k.*, m.nama_mitra 
                   FROM kendaraan k 
                   JOIN mitra m ON k.id_mitra = m.id_mitra
-                  WHERE k.jenis_kendaraan = 'motor' 
-                  AND k.status_kendaraan = 'tersedia'";
+                  WHERE k.status_kendaraan = 'tersedia'";
+
+        if (!empty($jenis)) {
+            $query .= " AND k.jenis_kendaraan = ?";
+        }
 
         if (!empty($search)) {
             $query .= " AND (k.merk LIKE ? OR k.model LIKE ? OR m.nama_mitra LIKE ?)";
-            $stmt = $conn->prepare($query);
+        }
+
+        $stmt = $conn->prepare($query);
+
+        if (!empty($jenis) && !empty($search)) {
+            $s = "%$search%";
+            $stmt->bind_param("ssss", $jenis, $s, $s, $s);
+        } elseif (!empty($jenis)) {
+            $stmt->bind_param("s", $jenis);
+        } elseif (!empty($search)) {
             $s = "%$search%";
             $stmt->bind_param("sss", $s, $s, $s);
-        } else {
-            $stmt = $conn->prepare($query);
         }
 
         $stmt->execute();
